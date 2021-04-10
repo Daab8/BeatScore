@@ -9,22 +9,14 @@ let cachedPage = {
 };
 
 module.exports = (savePath) => {
-  let localLeaderboards;
-  let lastModified;
-
-  // load save file
-  try {
-    // check if cached page is actual
-    lastModified = Date.parse(fs.statSync(savePath).mtime);
-    if (cachedPage.lastModified === lastModified) {
-      return pageHTML(cachedPage.topScoreHTMLTables, cachedPage.fullComboHTMLTables);
-    }
-    console.log('non-cached');
-    // get up-to-date save file
-    localLeaderboards = JSON.parse(fs.readFileSync(savePath))._leaderboardsData;
-  } catch (error) {
-    return console.log('Error while loading save data file:', error.message);
+  // check if cached page is actual
+  const lastModified = Date.parse(fs.statSync(savePath).mtime);
+  if (cachedPage.lastModified === lastModified) {
+    return pageHTML(cachedPage.topScoreHTMLTables, cachedPage.fullComboHTMLTables);
   }
+
+  // load up-to-date save file
+  const localLeaderboards = JSON.parse(fs.readFileSync(savePath))._leaderboardsData;
 
   // extract data
   const results = processPlayerData(localLeaderboards);
