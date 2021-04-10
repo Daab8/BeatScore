@@ -1,0 +1,19 @@
+{
+    "name": "beat-saber-party-statistics",
+    "description": "Statistics generator for Beat Saber Party mode.",
+    "version": "1.0.0",
+    "author": "david.abrhan@gmail.com",
+    "scripts": {
+        "start": "node app.js",
+        "lint": ".\\node_modules\\.bin\\eslint . --fix"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "openurl": "^1.1.1"
+    },
+    "devDependencies": {
+        "eslint": "^7.23.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-plugin-import": "^2.22.1"
+    }
+}
