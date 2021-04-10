@@ -13,8 +13,12 @@ if (!SAVE_PATH) {
 const app = express();
 
 app.get('/', (req, res) => {
-  const response = generate(SAVE_PATH);
-  return response ? res.send(response) : res.status(500).send('internal error');
+  try {
+    res.send(generate(SAVE_PATH));
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('internal error');
+  }
 });
 
 app.listen(PORT, () => {
