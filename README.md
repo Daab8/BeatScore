@@ -12,7 +12,7 @@
 - run either `node app.js` or `npm start`
 - in browser, navigate to `localhost:80` (or whichever port you chose)
 - webpage should be also available on local network for any connected device
-- refresh page (even during playing) to get actual results
+- refresh page (even during playing) to get up-to-date results
   
 ## Windows start script
 Script like this can be run from `.bat` file to automatically start the app in minimized cmd window
