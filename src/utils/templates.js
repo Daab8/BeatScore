@@ -10,7 +10,7 @@ exports.pageHTML = (topScores, fullCombos) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Beat Saber Party Statistics</title>
         <style>
-          table {font-size: 24px; float: left; margin: 12px;}
+          table {box-shadow:  5px 5px 8px #888888; font-size: 24px; float: left; margin: 12px; border-collapse: collapse;}
           td {padding: 0px 8px 0px 8px; border: 1px solid black; }
           h2 {margin-bottom: 0px;}
           div {clear: left; margin-bottom: 20px}
