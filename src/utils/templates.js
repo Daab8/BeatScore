@@ -8,7 +8,7 @@ exports.pageHTML = (topScores, fullCombos) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Beat Saber Party Statistics</title>
+        <title>BeatScore</title>
         <style>
           table {box-shadow:  5px 5px 8px #888888; font-size: 24px; float: left; margin: 12px; border-collapse: collapse;}
           td {padding: 0px 8px 0px 8px; border: 1px solid black; }
