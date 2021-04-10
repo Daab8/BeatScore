@@ -8,6 +8,13 @@ exports.getCurrentTime = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
-exports.getLocalIP = () => Object.values(networkInterfaces())
-  .reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat((i.family === 'IPv4' && !i.internal && i.address) || []), [])), [])[0]
-  || 'localhost';
+exports.getLocalIP = () => {
+  try {
+    return Object.values(networkInterfaces())
+      .reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat((i.family === 'IPv4' && !i.internal && i.address) || []), [])), [])[0]
+      || 'localhost';
+  } catch (error) {
+    console.log(error);
+    return 'localhost';
+  }
+};
