@@ -11,7 +11,7 @@
 - if optional environment variable PORT is not specified, `80` will be used
 - run either `node app.js` or `npm start`
 - in browser, navigate to `localhost:80` (or whichever port you chose)
-- webpage should be available on local netword for any connected device
+- webpage should be also available on local network for any connected device
 - refresh page (even during playing) to get actual results
   
 ## Windows start script
