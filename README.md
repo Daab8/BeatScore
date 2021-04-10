@@ -19,8 +19,8 @@ Script like this can be run from `.bat` file to automatically start the app in m
 ```
 if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
 cd C:\Users\USER\workspace\BeatScore
-cls
 SET SAVE_PATH=C:/Users/USER/AppData/LocalLow/Hyperbolic Magnetism/Beat Saber/LocalLeaderboards.dat
+cls
 node app.js
 exit
 
