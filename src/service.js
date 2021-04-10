@@ -2,11 +2,22 @@ const fs = require('fs');
 const { pageHTML, tableHTML, recordHTML } = require('./utils/templates');
 const processPlayerData = require('./utils/processPlayerData');
 
+let cachedPage = {
+  lastModified: null,
+  htmlPage: null,
+};
+
 module.exports = (savePath) => {
-  let localLeaderboards;
+  let localLeaderboards; let
+    lastModified;
 
   // load save file
   try {
+    // check if cached page is actual
+    lastModified = Date.parse(fs.statSync(savePath).mtime);
+    if (cachedPage.lastModified === lastModified) { return cachedPage.htmlPage; }
+
+    // get up-to-date save file
     localLeaderboards = JSON.parse(fs.readFileSync(savePath))._leaderboardsData;
   } catch (error) {
     return console.log('Error while loading save data file:', error.message);
@@ -37,5 +48,7 @@ module.exports = (savePath) => {
   });
 
   // return complete HTML page
-  return pageHTML(topScoreHTMLTables.join(''), fullComboHTMLTables.join(''));
+  const htmlPage = pageHTML(topScoreHTMLTables.join(''), fullComboHTMLTables.join(''));
+  cachedPage = { lastModified, htmlPage };
+  return htmlPage;
 };
