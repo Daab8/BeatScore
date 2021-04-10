@@ -1,9 +1,11 @@
 const express = require('express');
 const { open } = require('openurl');
+const { networkInterfaces } = require('os');
 const generate = require('./src/service');
 
 const PORT = process.env.PORT || '80';
 const { SAVE_PATH } = process.env;
+const localIP = Object.values(networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat((i.family === 'IPv4' && !i.internal && i.address) || []), [])), [])[0];
 
 if (!SAVE_PATH) {
   console.log('Missing required SAVE_PATH parameter');
@@ -17,6 +19,6 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Listening on localhost:${PORT}`);
+  console.log(`Listening on ${localIP}:${PORT}`);
   open(`http://localhost:${PORT}/`);
 });
