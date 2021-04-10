@@ -1,5 +1,8 @@
 # Statistics generator for Beat Saber Party mode
 
+![image](https://user-images.githubusercontent.com/26748457/114265373-bc94c800-99f0-11eb-8dd1-b9a6a273a384.png)
+
+
 ## Information
 - All scores are generated only from local "Party Mode" data.
 - "Top Scores" tables show how many first places does each player have.
