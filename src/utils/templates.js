@@ -18,17 +18,19 @@ exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
           </style>
       </head>
       <body>
-        <div style="text-align: right; font-size: 20px;">${getCurrentTime()}</div>
-        <div style="margin-left: 25px">
-          <div>
-            <h2>Top Scores:</h2>
-            ${topScores}
+        <div style="width: fit-content;">
+          <div style="text-align: right; font-size: 20px;">${getCurrentTime()}</div>
+          <div style="margin-left: 25px">
+            <div>
+              <h2>Top Scores:</h2>
+              ${topScores}
             </div>
             <div>
-            <br><h2>Full Combos:</h2>
-            ${fullCombos}
+              <br><h2>Full Combos:</h2>
+              ${fullCombos}
             </div>
           </div>
+        </div>
       </body>
     </html>
     `;
