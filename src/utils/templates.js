@@ -1,9 +1,6 @@
-exports.pageHTML = (topScores, fullCombos) => {
-  const date = new Date();
-  const hours = (`0${date.getHours()}`).slice(-2);
-  const minutes = (`0${date.getMinutes()}`).slice(-2);
-  const seconds = (`0${date.getSeconds()}`).slice(-2);
-  return `<!DOCTYPE html>
+const { getCurrentTime } = require('./utils');
+
+exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
@@ -22,7 +19,7 @@ exports.pageHTML = (topScores, fullCombos) => {
       </head>
       <body>
     <div style="text-align: right; font-size: 20px;">
-    ${hours}:${minutes}:${seconds}
+    ${getCurrentTime()}
     </div>
     <div style="margin-left: 25px">
     <div>
@@ -32,7 +29,6 @@ exports.pageHTML = (topScores, fullCombos) => {
     ${fullCombos}
     </div></div></body></html>
     `;
-};
 
 exports.tableHTML = (htmlClass, difficulty, records) => `<table>
 <tr>
