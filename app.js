@@ -1,7 +1,7 @@
 const express = require('express');
 const { open } = require('openurl');
 const generate = require('./src/service');
-const { getLocalIP } = require('./src/utils/utils')
+const getLocalIP = require('./src/utils/getLocalIP');
 
 const PORT = process.env.PORT || '80';
 const { SAVE_PATH } = process.env;
