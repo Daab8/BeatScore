@@ -1,5 +1,3 @@
-const { getCurrentTime } = require('./utils');
-
 exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -18,10 +16,7 @@ exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
           </style>
       </head>
       <body>
-    <div style="text-align: right; font-size: 20px;">
-    ${getCurrentTime()}
-    </div>
-    <div style="margin-left: 25px">
+    <div style="margin-left: 15px">
     <div>
     <h2>Top Scores:</h2>
     ${topScores}
