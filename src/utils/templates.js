@@ -21,7 +21,7 @@ exports.pageHTML = (topScores, fullCombos) => {
           </style>
       </head>
       <body>
-    <div style="width: 100%; text-align: right; font-size: 20px;">
+    <div style="text-align: right; font-size: 20px;">
     ${hours}:${minutes}:${seconds}
     </div>
     <div style="margin-left: 25px">
