@@ -1,20 +1,29 @@
 const { getCurrentTime } = require('./utils');
 
-exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
+exports.pageHTML = (topScores, fullCombos, changeTime, selectPlayerOptions, player) => `<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BeatScore</title>
         <style>
-          table {box-shadow:  5px 5px 8px #888888; font-size: 24px; float: left; margin: 12px; border-collapse: collapse;}
-          td {padding: 0px 8px 0px 8px; border: 1px solid black; }
+          table {box-shadow: 5px 5px 8px #888888; font-size: 24px; float: left; margin: 12px; border-collapse: collapse;}
+          td {padding: 0px 8px 0px 8px; border: 1px solid black; text-align: center;}
           h2 {margin-bottom: 0px;}
           div {clear: left; margin-bottom: 20px}
           .difficultyScore {text-align: center; font-size: 32px; background-color: rgb(150, 150, 255)}
           .difficultyCombo {text-align: center; font-size: 32px; background-color: rgb(255, 150, 150)}
           .score {text-align: right}
           .winner {font-weight: bold; background-color: rgb(255, 225, 50)}
+          span {font-size: 20px;}
+          button {
+            background-color: Orchid;
+            color: black;
+            border: 1px solid black;
+            font-size: 20px;
+            border-radius: 4px;
+            box-shadow:  3px 3px 5px #888888;
+          }
           </style>
       </head>
       <body>
@@ -30,21 +39,37 @@ exports.pageHTML = (topScores, fullCombos) => `<!DOCTYPE html>
               ${fullCombos}
             </div>
           </div>
+          <div style="text-align: right; padding-top: 25px">
+            <span>Changes since: <b>${new Date(changeTime).toISOString().replace(/T/, ' ').replace(/\..+/, '')}</b></span>
+            <div style="padding-top: 5px; font-size: 20px">
+              Player:
+              <select style="margin-right: 15px" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+                <option value="/">${player.toUpperCase()}</option>
+                ${selectPlayerOptions}
+              </select>
+              <button onclick="location.href='?reset=true&player=${player}'" type="button">Reset Changes</button>
+            </div>
+          </div>
         </div>
       </body>
     </html>
     `;
 
-exports.tableHTML = (htmlClass, difficulty, records) => `<table>
+exports.tableHTML = (htmlClass, difficulty, records, forPlayer) => `<table>
 <tr>
-  <td class="${htmlClass}" colspan="2">${difficulty}</td>
+  <td class="${htmlClass}" colspan="${forPlayer ? 3 : 2}">${difficulty}</td>
 </tr>
 ${records}
 </table>
 `;
 
-exports.recordHTML = (winner, name, score) => `<tr${winner ? ' class = "winner"' : ''}>
+exports.recordHTML = (winner, name, score, change, forPlayer) => `<tr${winner ? ' class = "winner"' : ''}>
 <td>${name.toUpperCase()}</td>
 <td class = "score">${score}</td>
-</tr>
-`;
+${forPlayer ? `
+<td${change !== '-' ? (` style = "background-color: ${change > 0 ? 'LightGreen' : 'LightCoral'}"`) : ''}>
+${change}
+</td>
+` : ''}`;
+
+exports.selectPlayerHTML = (players) => players.map((player) => `<option value="${player === 'none' ? '/' : `?player=${player}`}">${player.toUpperCase()}</option>`);
