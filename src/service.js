@@ -12,9 +12,18 @@ const cachedPages = {};
 module.exports = (savePath, reset, currentPlayer) => {
   let changeTime;
 
-  // check if cached page is actual and use it
+  // check if cached page is still actual and use it
   const lastModified = Date.parse(fs.statSync(savePath).mtime);
-  if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+  if (currentPlayer === 'none') {
+    const cachedPage = cachedPages[currentPlayer];
+    if (!reset && cachedPage && cachedPage.lastModified === lastModified) {
+      return pageHTML(cachedPage.topScoreHTMLTables,
+        cachedPage.fullComboHTMLTables,
+        null,
+        cachedPage.selectPlayerHTMLOptions,
+        currentPlayer);
+    }
+  } else if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
     changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
     const cachedPage = cachedPages[currentPlayer];
 
@@ -24,16 +33,6 @@ module.exports = (savePath, reset, currentPlayer) => {
       return pageHTML(cachedPage.topScoreHTMLTables,
         cachedPage.fullComboHTMLTables,
         cachedPage.changeTime,
-        cachedPage.selectPlayerHTMLOptions,
-        currentPlayer);
-    }
-  } else if (currentPlayer === 'none') {
-    const cachedPage = cachedPages[currentPlayer];
-    if (!reset && cachedPage
-      && cachedPage.lastModified === lastModified) {
-      return pageHTML(cachedPage.topScoreHTMLTables,
-        cachedPage.fullComboHTMLTables,
-        null,
         cachedPage.selectPlayerHTMLOptions,
         currentPlayer);
     }
