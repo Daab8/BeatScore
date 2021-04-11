@@ -27,6 +27,16 @@ module.exports = (savePath, reset, currentPlayer) => {
         cachedPage.selectPlayerHTMLOptions,
         currentPlayer);
     }
+  } else if (currentPlayer === 'none') {
+    const cachedPage = cachedPages[currentPlayer];
+    if (!reset && cachedPage
+      && cachedPage.lastModified === lastModified) {
+      return pageHTML(cachedPage.topScoreHTMLTables,
+        cachedPage.fullComboHTMLTables,
+        null,
+        cachedPage.selectPlayerHTMLOptions,
+        currentPlayer);
+    }
   }
 
   // load up-to-date save file
@@ -37,14 +47,16 @@ module.exports = (savePath, reset, currentPlayer) => {
 
   // if changes file doesn't exist create it
   let changeFile;
-  if (reset || !fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
-    if (!fs.existsSync(changeFilePath)) { fs.mkdirSync(changeFilePath); }
-    fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
-    if (reset) { return null; }
-    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
-    changeFile = results;
-  } else {
-    changeFile = JSON.parse(fs.readFileSync(`${changeFilePath}/cache_${currentPlayer}.json`));
+  if (currentPlayer !== 'none') {
+    if (reset || !fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+      if (!fs.existsSync(changeFilePath)) { fs.mkdirSync(changeFilePath); }
+      fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
+      if (reset) { return null; }
+      changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
+      changeFile = results;
+    } else {
+      changeFile = JSON.parse(fs.readFileSync(`${changeFilePath}/cache_${currentPlayer}.json`));
+    }
   }
 
   // prepare top score HTML tables
