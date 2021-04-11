@@ -83,11 +83,16 @@ module.exports = (localLeaderboards) => {
     .forEach((difficulty) => {
       const playersByTops = Object.entries(players)
         .sort((a, b) => compareTopsDifficulty(a[1], b[1], difficulty))
-        .map(([name]) => ({ ...players[name], name }));
+        .map(([name]) => ({ count: players[name].tops[difficulty] || 0, name }));
 
       const playersByFullCombos = Object.entries(players)
         .sort((a, b) => compareCombosDifficulty(a[1], b[1], difficulty))
-        .map(([name]) => ({ ...players[name], name }));
+        .map(([name]) => {
+          const record = players[name].fullCombos[difficulty];
+          return {
+            count: record ? record.size : 0, name,
+          };
+        });
 
       results.playersByTops[difficulty] = playersByTops;
       results.playersByFullCombos[difficulty] = playersByFullCombos;
