@@ -1,18 +1,32 @@
 const fs = require('fs');
-const { pageHTML, tableHTML, recordHTML } = require('./utils/templates');
+const {
+  pageHTML, tableHTML, recordHTML, selectPlayerHTML,
+} = require('./utils/templates');
+const { getChangeTopsScore, getChangeCombosScore } = require('./utils/utils');
 const processPlayerData = require('./utils/processPlayerData');
 
-let cachedPage = {
-  lastModified: null,
-  topScoreHTMLTables: null,
-  fullComboHTMLTables: null,
-};
+const changeFilePath = `${__dirname}/../changes`;
 
-module.exports = (savePath) => {
-  // check if cached page is actual
+const cachedPages = {};
+
+module.exports = (savePath, reset, currentPlayer) => {
+  let changeTime;
+
+  // check if cached page is actual and use it
   const lastModified = Date.parse(fs.statSync(savePath).mtime);
-  if (cachedPage.lastModified === lastModified) {
-    return pageHTML(cachedPage.topScoreHTMLTables, cachedPage.fullComboHTMLTables);
+  if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
+    const cachedPage = cachedPages[currentPlayer];
+
+    if (!reset && cachedPage
+      && cachedPage.lastModified === lastModified
+      && cachedPage.changeTime === changeTime) {
+      return pageHTML(cachedPage.topScoreHTMLTables,
+        cachedPage.fullComboHTMLTables,
+        cachedPage.changeTime,
+        cachedPage.selectPlayerHTMLOptions,
+        currentPlayer);
+    }
   }
 
   // load up-to-date save file
@@ -21,28 +35,56 @@ module.exports = (savePath) => {
   // extract data
   const results = processPlayerData(localLeaderboards);
 
+  // if changes file doesn't exist create it
+  let changeFile;
+  if (reset || !fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+    fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
+    if (reset) { return null; }
+    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
+    changeFile = results;
+  } else {
+    changeFile = JSON.parse(fs.readFileSync(`${changeFilePath}/cache_${currentPlayer}.json`));
+  }
+
   // prepare top score HTML tables
   const topScoreHTMLTables = Object.keys(results.playersByTops).map((difficulty) => {
-    const topScore = results.playersByTops[difficulty][0].tops[difficulty] || 0;
+    const topScore = results.playersByTops[difficulty][0].count;
     const records = results.playersByTops[difficulty].map((player) => {
-      const score = player.tops[difficulty] || 0;
-      return recordHTML(score !== 0 && score === topScore, player.name, score);
+      const score = player.count;
+      const isWinner = score !== 0 && score === topScore;
+      const change = getChangeTopsScore(changeFile, player.name, difficulty, score);
+      return recordHTML(isWinner, player.name, score, change, currentPlayer !== 'none');
     }).join('');
-    return tableHTML('difficultyScore', difficulty, records);
+    return tableHTML('difficultyScore', difficulty, records, currentPlayer !== 'none');
   }).join('');
 
   // prepare full combo HTML tables
   const fullComboHTMLTables = Object.keys(results.playersByFullCombos).map((difficulty) => {
-    const fullCombos = results.playersByFullCombos[difficulty][0].fullCombos[difficulty];
-    const topScore = fullCombos ? fullCombos.size : 0;
+    const topScore = results.playersByFullCombos[difficulty][0].count;
     const records = results.playersByFullCombos[difficulty].map((player) => {
-      const score = player.fullCombos[difficulty] ? player.fullCombos[difficulty].size : 0;
-      return recordHTML(score !== 0 && score === topScore, player.name, score);
+      const score = player.count;
+      const isWinner = score !== 0 && score === topScore;
+      const change = getChangeCombosScore(changeFile, player.name, difficulty, score);
+      return recordHTML(isWinner, player.name, score, change, currentPlayer !== 'none');
     }).join('');
-    return tableHTML('difficultyCombo', difficulty, records);
+    return tableHTML('difficultyCombo', difficulty, records, currentPlayer !== 'none');
   }).join('');
 
+  // get other players for dropdown menu
+  const players = Object.values(results.playersByTops)[0]
+    .map((record) => record.name).filter((onePlayer) => onePlayer !== currentPlayer);
+  if (currentPlayer !== 'none') {
+    players.push('none');
+  }
+  const selectPlayerHTMLOptions = selectPlayerHTML(players);
+
   // return complete HTML page
-  cachedPage = { lastModified, topScoreHTMLTables, fullComboHTMLTables };
-  return pageHTML(topScoreHTMLTables, fullComboHTMLTables);
+  cachedPages[currentPlayer] = {
+    lastModified, topScoreHTMLTables, fullComboHTMLTables, changeTime, selectPlayerHTMLOptions,
+  };
+  return pageHTML(topScoreHTMLTables,
+    fullComboHTMLTables,
+    changeTime,
+    selectPlayerHTMLOptions,
+    currentPlayer);
 };
