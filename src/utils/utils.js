@@ -18,3 +18,25 @@ exports.getLocalIP = () => {
     return 'localhost';
   }
 };
+
+exports.getChangeTopsScore = (changeFile, name, difficulty, score) => {
+  if (changeFile) {
+    const changeRecord = changeFile.playersByTops[difficulty]
+      .find((player) => player.name === name);
+    const change = score - changeRecord.count;
+    if (change > 0) { return `+${change}`; }
+    if (change < 0) { return `${change}`; }
+  }
+  return '-';
+};
+
+exports.getChangeCombosScore = (changeFile, name, difficulty, score) => {
+  if (changeFile) {
+    const changeRecord = changeFile.playersByFullCombos[difficulty]
+      .find((player) => player.name === name);
+    const change = score - changeRecord.count;
+    if (change > 0) { return `+${change}`; }
+    if (change < 0) { return `${change}`; }
+  }
+  return '-';
+};
