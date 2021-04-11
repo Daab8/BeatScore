@@ -1,5 +1,7 @@
 const express = require('express');
 const { open } = require('openurl');
+const { urlencoded } = require('body-parser');
+
 const generate = require('./src/service');
 const { getLocalIP } = require('./src/utils/utils');
 
@@ -11,17 +13,27 @@ if (!SAVE_PATH) {
 }
 
 const app = express();
+app.use(urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
   try {
-    res.send(generate(SAVE_PATH));
+    const player = req.query.player || 'none';
+    const reset = req.query.reset === 'true' || false;
+
+    if (reset) {
+      generate(SAVE_PATH, reset, player);
+      const url = !player || player === 'none' ? '/' : `?player=${player}`;
+      return res.redirect(303, url);
+    }
+
+    return res.send(generate(SAVE_PATH, reset, player));
   } catch (error) {
     console.log(error.message);
-    res.status(500).send('internal error');
+    return res.status(500).send('internal error');
   }
 });
 
 app.listen(PORT, () => {
   console.log(`Listening on ${getLocalIP()}:${PORT}`);
-  open(`http://localhost:${PORT}/`);
+  open('http://localhost/');
 });
