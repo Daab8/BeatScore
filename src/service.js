@@ -38,6 +38,7 @@ module.exports = (savePath, reset, currentPlayer) => {
   // if changes file doesn't exist create it
   let changeFile;
   if (reset || !fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+    if (!fs.existsSync(changeFilePath)) { fs.mkdirSync(changeFilePath); }
     fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
     if (reset) { return null; }
     changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
