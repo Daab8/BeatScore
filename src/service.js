@@ -1,41 +1,27 @@
 const fs = require('fs');
-const {
-  pageHTML, tableHTML, recordHTML, selectPlayerHTML,
-} = require('./utils/templates');
-const { getChangeTopsScore, getChangeCombosScore } = require('./utils/utils');
+const { pageHTML, selectPlayerHTML } = require('./utils/templates');
 const processPlayerData = require('./utils/processPlayerData');
+const findCachedPage = require('./utils/findCachedPage');
+const prepareHTMLTables = require('./utils/prepareHTMLTables');
+const { processChangeFile } = require('./utils/utils');
 
 const changeFilePath = `${__dirname}/../changes`;
-
 const cachedPages = {};
 
 module.exports = (savePath, reset, currentPlayer) => {
+  // get times of last modification for save and cache files
+  const lastModified = Date.parse(fs.statSync(savePath).mtime);
   let changeTime;
+  if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
+    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
+  }
 
   // check if cached page is still actual and use it
-  const lastModified = Date.parse(fs.statSync(savePath).mtime);
-  if (currentPlayer === 'none') {
-    const cachedPage = cachedPages[currentPlayer];
-    if (!reset && cachedPage && cachedPage.lastModified === lastModified) {
-      return pageHTML(cachedPage.topScoreHTMLTables,
-        cachedPage.fullComboHTMLTables,
-        null,
-        cachedPage.selectPlayerHTMLOptions,
-        currentPlayer);
-    }
-  } else if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
-    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
-    const cachedPage = cachedPages[currentPlayer];
-
-    if (!reset && cachedPage
-      && cachedPage.lastModified === lastModified
-      && cachedPage.changeTime === changeTime) {
-      return pageHTML(cachedPage.topScoreHTMLTables,
-        cachedPage.fullComboHTMLTables,
-        cachedPage.changeTime,
-        cachedPage.selectPlayerHTMLOptions,
-        currentPlayer);
-    }
+  const findCachedPageResult = findCachedPage(
+    currentPlayer, cachedPages, lastModified, changeTime, reset,
+  );
+  if (findCachedPageResult) {
+    return findCachedPageResult;
   }
 
   // load up-to-date save file
@@ -44,43 +30,21 @@ module.exports = (savePath, reset, currentPlayer) => {
   // extract data
   const results = processPlayerData(localLeaderboards);
 
-  // if changes file doesn't exist create it
+  // process change file
   let changeFile;
   if (currentPlayer !== 'none') {
-    if (reset || !fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
-      if (!fs.existsSync(changeFilePath)) { fs.mkdirSync(changeFilePath); }
-      fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
-      if (reset) { return null; }
-      changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
-      changeFile = results;
-    } else {
-      changeFile = JSON.parse(fs.readFileSync(`${changeFilePath}/cache_${currentPlayer}.json`));
-    }
+    const processChangeFileResult = processChangeFile(
+      currentPlayer, results, reset, changeTime, changeFilePath,
+    );
+    if (!processChangeFileResult) { return null; }
+    changeTime = processChangeFileResult.changeTime;
+    changeFile = processChangeFileResult.changeFile;
   }
 
-  // prepare top score HTML tables
-  const topScoreHTMLTables = Object.keys(results.playersByTops).map((difficulty) => {
-    const topScore = results.playersByTops[difficulty][0].count;
-    const records = results.playersByTops[difficulty].map((player) => {
-      const score = player.count;
-      const isWinner = score !== 0 && score === topScore;
-      const change = getChangeTopsScore(changeFile, player.name, difficulty, score);
-      return recordHTML(isWinner, player.name, score, change, currentPlayer !== 'none');
-    }).join('');
-    return tableHTML('difficultyScore', difficulty, records, currentPlayer !== 'none');
-  }).join('');
-
-  // prepare full combo HTML tables
-  const fullComboHTMLTables = Object.keys(results.playersByFullCombos).map((difficulty) => {
-    const topScore = results.playersByFullCombos[difficulty][0].count;
-    const records = results.playersByFullCombos[difficulty].map((player) => {
-      const score = player.count;
-      const isWinner = score !== 0 && score === topScore;
-      const change = getChangeCombosScore(changeFile, player.name, difficulty, score);
-      return recordHTML(isWinner, player.name, score, change, currentPlayer !== 'none');
-    }).join('');
-    return tableHTML('difficultyCombo', difficulty, records, currentPlayer !== 'none');
-  }).join('');
+  // prepare HTML tables
+  const { topScoreHTMLTables, fullComboHTMLTables } = prepareHTMLTables(
+    results, changeFile, currentPlayer,
+  );
 
   // get other players for dropdown menu
   const players = Object.values(results.playersByTops)[0]
@@ -90,10 +54,11 @@ module.exports = (savePath, reset, currentPlayer) => {
   }
   const selectPlayerHTMLOptions = selectPlayerHTML(players);
 
-  // return complete HTML page
+  // cache data for HTML page
   cachedPages[currentPlayer] = {
     lastModified, topScoreHTMLTables, fullComboHTMLTables, changeTime, selectPlayerHTMLOptions,
   };
+
   return pageHTML(topScoreHTMLTables,
     fullComboHTMLTables,
     changeTime,
