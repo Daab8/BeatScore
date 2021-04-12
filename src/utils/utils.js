@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { networkInterfaces } = require('os');
 
 exports.getCurrentTime = () => {
@@ -39,4 +40,20 @@ exports.getChangeCombosScore = (changeFile, name, difficulty, score) => {
     if (change < 0) { return `${change}`; }
   }
   return '-';
+};
+
+exports.processChangeFile = (currentPlayer, results, reset, changeTime, changeFilePath) => {
+  if (reset || !changeTime) {
+    if (!fs.existsSync(changeFilePath)) { fs.mkdirSync(changeFilePath); }
+    fs.writeFileSync(`${changeFilePath}/cache_${currentPlayer}.json`, JSON.stringify(results));
+    if (reset) { return null; }
+    return {
+      changeFile: results,
+      changeTime: Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime),
+    };
+  }
+  return {
+    changeFile: JSON.parse(fs.readFileSync(`${changeFilePath}/cache_${currentPlayer}.json`)),
+    changeTime,
+  };
 };
