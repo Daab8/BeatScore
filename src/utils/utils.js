@@ -21,7 +21,7 @@ exports.getLocalIP = () => {
 };
 
 exports.getChangeTopsScore = (changeFile, name, difficulty, score) => {
-  if (changeFile) {
+  if (changeFile && changeFile.playersByTops[difficulty]) {
     const changeRecord = changeFile.playersByTops[difficulty]
       .find((player) => player.name === name);
     const change = score - changeRecord.count;
@@ -32,7 +32,7 @@ exports.getChangeTopsScore = (changeFile, name, difficulty, score) => {
 };
 
 exports.getChangeCombosScore = (changeFile, name, difficulty, score) => {
-  if (changeFile) {
+  if (changeFile && changeFile.playersByFullCombos[difficulty]) {
     const changeRecord = changeFile.playersByFullCombos[difficulty]
       .find((player) => player.name === name);
     const change = score - changeRecord.count;
