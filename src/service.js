@@ -43,7 +43,7 @@ module.exports = (savePath, reset, currentPlayer) => {
 
   // prepare HTML tables
   const { topScoreHTMLTables, fullComboHTMLTables } = prepareHTMLTables(
-    results, changeFile, currentPlayer,
+    results, changeFile, currentPlayer
   );
 
   // get other players for dropdown menu
