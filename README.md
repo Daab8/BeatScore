@@ -1,6 +1,6 @@
 # Statistics generator for Beat Saber Party mode
 
-![image](https://user-images.githubusercontent.com/26748457/114668034-8a40de80-9d00-11eb-9b99-b2393c813426.png)
+![image](https://user-images.githubusercontent.com/26748457/114684113-e7dd2700-9d10-11eb-9222-c516a3b707cd.png)
 
 ## Information
 - All scores are generated only from local "Party Mode" data.
