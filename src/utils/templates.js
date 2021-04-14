@@ -13,12 +13,12 @@ exports.pageHTML = (topScores, fullCombos, changeTime, selectPlayerOptions, play
           h2 {margin-bottom: 0px;}
           div {clear: left; margin-bottom: 20px}
           .difficultyScore {text-align: center; font-size: 32px; background-color: rgb(150, 150, 255)}
-          .difficultyCombo {text-align: center; font-size: 32px; background-color: rgb(255, 150, 150)}
+          .difficultyCombo {text-align: center; font-size: 32px; background-color: Violet}
           .score {text-align: right}
           .winner {font-weight: bold; background-color: rgb(255, 225, 50)}
           span {font-size: 20px;}
           button {
-            background-color: Orchid;
+            background-color: Orange;
             color: black;
             border: 1px solid black;
             font-size: 20px;
