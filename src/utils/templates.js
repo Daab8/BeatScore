@@ -41,7 +41,7 @@ exports.pageHTML = (topScores, fullCombos, changeTime, selectPlayerOptions, play
             </div>
           </div>
           <div style="text-align: right; padding-top: 25px">
-            ${changeTime ? `<span>Changes since: <b style="margin-left: 8px;">${new Date(changeTime - new Date(changeTime).getTimezoneOffset() * 60000).toISOString().replace(/T/, ' ').replace(/\..+/, '')}</b></span>` : ''}
+            ${changeTime ? `<span>Changes since: <b style="margin-left: 7px;">${new Date(changeTime - new Date(changeTime).getTimezoneOffset() * 60000).toISOString().replace(/T/, ' ').replace(/\..+/, '')}</b></span>` : ''}
             <div style="padding-top: 5px; font-size: 20px">
               Player:
               <select style="margin-right: 15px" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
