@@ -3,17 +3,18 @@ const { pageHTML, selectPlayerHTML } = require('./utils/templates');
 const processPlayerData = require('./utils/processPlayerData');
 const findCachedPage = require('./utils/findCachedPage');
 const prepareHTMLTables = require('./utils/prepareHTMLTables');
-const { processChangeFile } = require('./utils/utils');
+const { processChangeFile, getLastModified } = require('./utils/utils');
 
-const changeFilePath = `${__dirname}/../changes`;
+const filesFolder = `${__dirname}/../files`;
+const backupPath = `${filesFolder}/backup.json`
 const cachedPages = {};
 
 module.exports = (savePath, reset, currentPlayer) => {
   // get times of last modification for save and cache files
-  const lastModified = Date.parse(fs.statSync(savePath).mtime);
+  const lastModified = getLastModified(savePath, filesFolder);
   let changeTime;
-  if (fs.existsSync(`${changeFilePath}/cache_${currentPlayer}.json`)) {
-    changeTime = Date.parse(fs.statSync(`${changeFilePath}/cache_${currentPlayer}.json`).mtime);
+  if (fs.existsSync(`${filesFolder}/cache_${currentPlayer}.json`)) {
+    changeTime = Date.parse(fs.statSync(`${filesFolder}/cache_${currentPlayer}.json`).mtime);
   }
 
   // check if cached page is still actual and use it
@@ -25,7 +26,7 @@ module.exports = (savePath, reset, currentPlayer) => {
   }
 
   // load up-to-date save file
-  const localLeaderboards = JSON.parse(fs.readFileSync(savePath))._leaderboardsData;
+  const localLeaderboards = JSON.parse(fs.readFileSync(backupPath))._leaderboardsData;
 
   // extract data
   const results = processPlayerData(localLeaderboards);
@@ -34,7 +35,7 @@ module.exports = (savePath, reset, currentPlayer) => {
   let changeFile;
   if (currentPlayer !== 'none') {
     const processChangeFileResult = processChangeFile(
-      currentPlayer, results, reset, changeTime, changeFilePath,
+      currentPlayer, results, reset, changeTime, filesFolder,
     );
     if (!processChangeFileResult) { return null; }
     changeTime = processChangeFileResult.changeTime;
@@ -43,7 +44,7 @@ module.exports = (savePath, reset, currentPlayer) => {
 
   // prepare HTML tables
   const { topScoreHTMLTables, fullComboHTMLTables } = prepareHTMLTables(
-    results, changeFile, currentPlayer
+    results, changeFile, currentPlayer,
   );
 
   // get other players for dropdown menu
