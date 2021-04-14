@@ -12,8 +12,8 @@ exports.pageHTML = (topScores, fullCombos, changeTime, selectPlayerOptions, play
           td {padding: 0px 8px 0px 8px; border: 1px solid black; text-align: center;}
           h2 {margin-bottom: 0px;}
           div {clear: left; margin-bottom: 20px}
-          .difficultyScore {text-align: center; font-size: 32px; background-color: rgb(150, 150, 255)}
-          .difficultyCombo {text-align: center; font-size: 32px; background-color: Violet}
+          .difficultyScore {text-align: center; font-size: 32px; background-color: rgb(165, 165, 255)}
+          .difficultyCombo {text-align: center; font-size: 32px; background-color: rgb(230, 150, 230)}
           .score {text-align: right}
           .winner {font-weight: bold; background-color: rgb(255, 225, 50)}
           span {font-size: 20px;}
