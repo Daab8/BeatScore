@@ -57,3 +57,18 @@ exports.processChangeFile = (currentPlayer, results, reset, changeTime, changeFi
     changeTime,
   };
 };
+
+exports.getLastModified = (savePath, changeFilePath) => {
+  const backupFilePath = `${changeFilePath}/backup.json`;
+  const saveLastModified = Date.parse(fs.statSync(savePath).mtime);
+  let backupLastModified;
+  if (fs.existsSync(backupFilePath)) {
+    backupLastModified = Date.parse(fs.statSync(backupFilePath).mtime);
+    if (backupLastModified === saveLastModified) {
+      return backupLastModified;
+    }
+  }
+
+  fs.copyFileSync(savePath, backupFilePath);
+  return Date.parse(fs.statSync(backupFilePath).mtime);
+};
