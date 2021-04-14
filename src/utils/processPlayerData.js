@@ -3,6 +3,7 @@ const difficultyLevels = {
   Normal: 2,
   Hard: 3,
   Expert: 4,
+  Plus: 5,
 };
 
 const compareTopsDifficulty = (a, b, difficulty) => {
@@ -22,8 +23,8 @@ const compareCombosDifficulty = (a, b, difficulty) => {
 };
 
 const compareDifficulty = (a, b) => {
-  const countA = difficultyLevels[a] || 5;
-  const countB = difficultyLevels[b] || 5;
+  const countA = difficultyLevels[a] || 6;
+  const countB = difficultyLevels[b] || 6;
   if (countA > countB) { return 1; }
   if (countA < countB) { return -1; }
   return 0;
