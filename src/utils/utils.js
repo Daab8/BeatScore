@@ -24,7 +24,7 @@ exports.getChangeTopsScore = (changeFile, name, difficulty, score) => {
   if (changeFile && changeFile.playersByTops[difficulty]) {
     const changeRecord = changeFile.playersByTops[difficulty]
       .find((player) => player.name === name);
-    if (changeRecord && changeRecord.count) {
+    if (changeRecord && changeRecord.count >= 0) {
       const change = score - changeRecord.count;
       if (change > 0) { return `+${change}`; }
       if (change < 0) { return `${change}`; }
@@ -37,7 +37,7 @@ exports.getChangeCombosScore = (changeFile, name, difficulty, score) => {
   if (changeFile && changeFile.playersByFullCombos[difficulty]) {
     const changeRecord = changeFile.playersByFullCombos[difficulty]
       .find((player) => player.name === name);
-    if (changeRecord && changeRecord.count) {
+    if (changeRecord && changeRecord.count >= 0) {
       const change = score - changeRecord.count;
       if (change > 0) { return `+${change}`; }
       if (change < 0) { return `${change}`; }
